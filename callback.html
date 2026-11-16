@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <title>Sign-in code – MyNextClip</title>
+  <style>
+    body { font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1c1a17; background: #f4f2ee; margin: 0; }
+    main { max-width: 640px; margin: 0 auto; padding: 56px 20px; }
+    h1 { font-size: 28px; letter-spacing: -0.02em; margin: 0 0 12px; }
+    textarea { width: 100%; box-sizing: border-box; font: 14px/1.4 ui-monospace, Consolas, monospace; padding: 12px; border-radius: 10px; border: 1px solid #d6d0c6; background: #fff; }
+    button { font: inherit; font-weight: 600; padding: 10px 18px; border-radius: 10px; border: 0; background: #e8472a; color: #fff; cursor: pointer; margin-top: 10px; }
+    .error { color: #b3261e; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="heading">Sign-in code</h1>
+    <p id="message">Copy the text below and paste it into MyNextClip to finish connecting your account. It is only shown in your browser and is not stored on this page.</p>
+    <textarea id="code" rows="5" readonly aria-label="Sign-in code"></textarea>
+    <button id="copy" type="button">Copy</button>
+  </main>
+  <script>
+    // TikTok and Instagram send the browser here after you approve access, with a
+    // one-time code in the address. This page only displays it so you can paste
+    // it into MyNextClip on your own server; nothing is sent anywhere.
+    var params = new URLSearchParams(location.search);
+    var box = document.getElementById("code");
+    var error = params.get("error_description") || params.get("error");
+    if (error) {
+      document.getElementById("heading").textContent = "Sign-in was not completed";
+      document.getElementById("message").textContent = error;
+      document.getElementById("message").className = "error";
+      box.hidden = true;
+      document.getElementById("copy").hidden = true;
+    } else if (params.get("code")) {
+      box.value = location.href;
+      // Remove the code from the address bar and history once it is on the page.
+      history.replaceState(null, "", location.pathname);
+    } else {
+      document.getElementById("message").textContent = "There is no sign-in code in this address. Start connecting the account from MyNextClip's Settings.";
+      box.hidden = true;
+      document.getElementById("copy").hidden = true;
+    }
+    document.getElementById("copy").addEventListener("click", function () {
+      box.select();
+      navigator.clipboard.writeText(box.value).then(function () {
+        document.getElementById("copy").textContent = "Copied";
+      });
+    });
+  </script>
+</body>
+</html>
